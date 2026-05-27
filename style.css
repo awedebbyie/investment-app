@@ -1,0 +1,165 @@
+body{
+    margin:0;
+
+    background:white;
+
+    font-family:Arial, sans-serif;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    height:100vh;
+
+    overflow:hidden;
+}
+
+/* MAIN GAME CONTAINER */
+
+.game-container{
+
+    width:25vw;
+    min-width:380px;
+    max-width:420px;
+
+    height:92vh;
+
+    background:#555;
+
+    border-radius:25px;
+
+    padding:16px;
+
+    box-sizing:border-box;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+
+    box-shadow:0 0 30px rgba(0,0,0,0.3);
+
+    overflow:hidden;
+}
+
+/* GRAPH AREA */
+
+.graph-area{
+
+    position:relative;
+
+    width:100%;
+    height:65%;
+
+    background:#111;
+
+    border-radius:18px;
+
+    overflow:hidden;
+}
+
+/* AXES */
+
+.y-axis{
+    position:absolute;
+    left:6px;
+    top:2px;
+    width:8px;
+    height:calc(100% - 4px);
+    background:white;
+    border-radius:20px;
+}
+
+.x-axis{
+    position:absolute;
+    bottom:6px;
+    left:2px;
+    width:calc(100% - 4px);
+    height:8px;
+    background:white;
+    border-radius:20px;
+}
+
+/* DOTS */
+
+.dot{
+    position:absolute;
+    width:10px;
+    height:10px;
+    background:white;
+    border-radius:50%;
+}
+
+.origin{ left:6px; bottom:6px; }
+
+.y1{ left:6px; top:18%; }
+.y2{ left:6px; top:33%; }
+.y3{ left:6px; top:48%; }
+.y4{ left:6px; top:63%; }
+.y5{ left:6px; top:78%; }
+
+.x1{ left:20%; bottom:6px; }
+.x2{ left:35%; bottom:6px; }
+.x3{ left:50%; bottom:6px; }
+.x4{ left:65%; bottom:6px; }
+.x5{ left:80%; bottom:6px; }
+
+/* CONTROLS */
+
+.controls{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    width:100%;
+}
+
+.invest-row{
+    display:flex;
+    gap:8px;
+    width:100%;
+    align-items:flex-start;
+}
+
+.left-side{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.amount-input{
+    width:100%;
+    height:45px;
+    background:#1a1a1a;
+    border:none;
+    border-radius:10px;
+    color:white;
+    font-size:16px;
+    padding-left:10px;
+}
+
+.price-grid{
+    display:grid;
+    grid-template-columns:repeat(5, 1fr);
+    gap:4px;
+}
+
+.price-btn{
+    background:#333;
+    color:white;
+    border:none;
+    border-radius:6px;
+    font-size:11px;
+    padding:4px 0;
+    cursor:pointer;
+}
+
+.invest-btn{
+    width:110px;
+    height:95px;
+    border:none;
+    border-radius:12px;
+    background:#00aa44;
+    color:white;
+    font-size:18px;
+    font-weight:bold;
+}
