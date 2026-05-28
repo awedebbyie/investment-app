@@ -18,7 +18,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const baseText = "INVEST";
 
+        // =========================
         // FORMAT MONEY
+        // =========================
 
         function formatMoney(value) {
 
@@ -29,7 +31,9 @@ document.addEventListener("DOMContentLoaded", () => {
             return num.toFixed(2);
         }
 
+        // =========================
         // UPDATE BUTTON TEXT
+        // =========================
 
         function updateButton(value) {
 
@@ -56,7 +60,9 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
         }
 
+        // =========================
         // QUICK PRICE BUTTONS
+        // =========================
 
         priceBtns.forEach((btn) => {
 
@@ -64,6 +70,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 let value =
                     parseFloat(btn.textContent);
+
+                if (value < 10) {
+
+                    value = 10;
+                }
 
                 input.value =
                     formatMoney(value);
@@ -76,7 +87,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         });
 
+        // =========================
         // INPUT TYPING
+        // =========================
 
         input.addEventListener("input", () => {
 
@@ -89,6 +102,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const parts = value.split(".");
 
+            // ONLY ONE DOT
+
             if (parts.length > 2) {
 
                 value =
@@ -97,13 +112,30 @@ document.addEventListener("DOMContentLoaded", () => {
                     parts.slice(1).join("");
             }
 
+            // BLOCK VALUES BELOW 10
+
+            if (
+                value !== "" &&
+                value !== "." &&
+                parseFloat(value) < 10
+            ) {
+
+                input.value = "10.00";
+
+                updateButton("10.00");
+
+                return;
+            }
+
             input.value = value;
 
             updateButton(value);
 
         });
 
-        // INPUT FINISHING
+        // =========================
+        // INPUT BLUR
+        // =========================
 
         input.addEventListener("blur", () => {
 
@@ -125,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
             let num =
                 parseFloat(value);
 
-            // MINIMUM ₦10
+            // MINIMUM ₦10.00
 
             if (num < 10) {
 
@@ -142,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         // =========================
-        // INVEST BUTTON CLICK
+        // INVEST CLICK
         // =========================
 
         investBtn.addEventListener("click", () => {
@@ -172,26 +204,52 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let multi = 1.00;
 
-    // STARTING PATH
+    let wave = 0;
+
+    let upwardSpeed = 1.1;
+
+    // =========================
+    // START PATH
+    // =========================
 
     let path =
         `M ${x + 25} ${320 - y}`;
 
-    // ANIMATION FUNCTION
+    // =========================
+    // ANIMATION
+    // =========================
 
     function animate() {
 
-        // MOVEMENT
+        // MOVE RIGHT
 
-        x += 1.2;
+        x += 1.4;
 
-        y += 0.7;
+        // FIRST PHASE
+        // DIAGONAL TAKEOFF
+
+        if (x < 140) {
+
+            y += upwardSpeed;
+        }
+
+        // SECOND PHASE
+        // NATURAL MOTION
+
+        else {
+
+            wave += 0.06;
+
+            y +=
+                upwardSpeed +
+                Math.sin(wave) * 1.5;
+        }
 
         // MULTIPLIER
 
         multi += 0.01;
 
-        // UPDATE HELICOPTER POSITION
+        // POSITION
 
         helicopter.style.left =
             x + "px";
@@ -199,24 +257,35 @@ document.addEventListener("DOMContentLoaded", () => {
         helicopter.style.bottom =
             y + "px";
 
-        // UPDATE MULTIPLIER TEXT
+        // MULTIPLIER DISPLAY
 
         multiplier.textContent =
             multi.toFixed(2) + "x";
 
-        // DRAW CURVE
+        // CURVED GRAPH
 
         path +=
-            ` L ${x + 25} ${320 - y}`;
+            ` Q ${x - 5} ${320 - y}
+               ${x + 8} ${320 - y}`;
 
         flightPath.setAttribute(
             "d",
             path
         );
+
+        // STOP BEFORE EDGE
+
+        if (x > 360 || y > 290) {
+
+            clearInterval(loop);
+        }
     }
 
-    // RUN MOVEMENT
+    // =========================
+    // START LOOP
+    // =========================
 
-    setInterval(animate, 30);
+    const loop =
+        setInterval(animate, 30);
 
 });

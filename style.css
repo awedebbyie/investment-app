@@ -34,7 +34,6 @@ body{
     background:#111;
     border-radius:18px;
     overflow:hidden;
-
     z-index:1;
 }
 
@@ -68,7 +67,7 @@ body{
 #flightPath{
     fill:none;
     stroke:#00ff66;
-    stroke-width:4;
+    stroke-width:2;
     stroke-linecap:round;
 }
 
