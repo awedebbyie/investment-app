@@ -103,6 +103,27 @@ body{
 .x4{ left:65%; bottom:6px; }
 .x5{ left:80%; bottom:6px; }
 
+/* HELICOPTER */
+
+.helicopter{
+
+    position:absolute;
+
+    width:70px;
+
+    left:12px;
+
+    bottom:4px;
+
+    z-index:10;
+
+    pointer-events:none;
+
+    object-fit:contain;
+
+    background:none;
+}
+
 /* CONTROLS */
 
 .controls{
