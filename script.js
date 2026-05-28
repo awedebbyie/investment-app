@@ -1,16 +1,25 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+    // =========================
+    // INVEST SYSTEM
+    // =========================
+
     const rows = document.querySelectorAll(".invest-row");
 
     rows.forEach((row) => {
 
         const input = row.querySelector(".amount-input");
-        const investBtn = row.querySelector(".invest-btn");
-        const priceBtns = row.querySelectorAll(".price-btn");
+
+        const investBtn =
+            row.querySelector(".invest-btn");
+
+        const priceBtns =
+            row.querySelectorAll(".price-btn");
 
         const baseText = "INVEST";
 
         // FORMAT MONEY
+
         function formatMoney(value) {
 
             let num = parseFloat(value);
@@ -20,7 +29,8 @@ document.addEventListener("DOMContentLoaded", () => {
             return num.toFixed(2);
         }
 
-        // UPDATE BUTTON
+        // UPDATE BUTTON TEXT
+
         function updateButton(value) {
 
             if (
@@ -28,58 +38,73 @@ document.addEventListener("DOMContentLoaded", () => {
                 value === "." ||
                 isNaN(parseFloat(value))
             ) {
-                investBtn.textContent = baseText;
+
+                investBtn.innerHTML = baseText;
+
                 return;
             }
 
-            investBtn.textContent =
-                `${baseText} (${value})`;
+            investBtn.innerHTML = `
+                <div>${baseText}</div>
+
+                <div style="
+                    font-size:14px;
+                    margin-top:4px;
+                ">
+                    (${value})
+                </div>
+            `;
         }
 
-        // QUICK BUTTONS
-        priceBtns.forEach(btn => {
+        // QUICK PRICE BUTTONS
+
+        priceBtns.forEach((btn) => {
 
             btn.addEventListener("click", () => {
 
-                let value = parseFloat(btn.textContent);
+                let value =
+                    parseFloat(btn.textContent);
 
-                if (value < 10) {
-                    alert("Minimum investment is ₦10.00");
-                    return;
-                }
+                input.value =
+                    formatMoney(value);
 
-                input.value = formatMoney(value);
-
-                updateButton(formatMoney(value));
+                updateButton(
+                    formatMoney(value)
+                );
 
             });
 
         });
 
-        // NORMAL TYPING
+        // INPUT TYPING
+
         input.addEventListener("input", () => {
 
             let value = input.value;
 
-            // remove invalid chars
-            value = value.replace(/[^0-9.]/g, "");
+            // ALLOW ONLY NUMBERS + ONE DOT
 
-            // only ONE decimal point
+            value =
+                value.replace(/[^0-9.]/g, "");
+
             const parts = value.split(".");
 
             if (parts.length > 2) {
-                value = parts[0] + "." + parts.slice(1).join("");
+
+                value =
+                    parts[0] +
+                    "." +
+                    parts.slice(1).join("");
             }
 
             input.value = value;
 
-            // IMPORTANT:
-            // do NOT auto-add .00 while typing
             updateButton(value);
 
         });
 
-        // AFTER USER FINISHES TYPING
+        // INPUT FINISHING
+
         input.addEventListener("blur", () => {
 
             let value = input.value;
@@ -88,57 +113,110 @@ document.addEventListener("DOMContentLoaded", () => {
                 value === "" ||
                 value === "."
             ) {
+
                 input.value = "";
-                investBtn.textContent = baseText;
+
+                investBtn.innerHTML =
+                    baseText;
+
                 return;
             }
 
-            let num = parseFloat(value);
+            let num =
+                parseFloat(value);
 
-            if (isNaN(num)) {
-                input.value = "";
-                investBtn.textContent = baseText;
-                return;
-            }
+            // MINIMUM ₦10
 
-            // MINIMUM CHECK
             if (num < 10) {
-
-                alert("Minimum investment is ₦10.00");
 
                 num = 10;
             }
 
-            // ONLY add .00 AFTER typing complete
-            input.value = formatMoney(num);
+            input.value =
+                formatMoney(num);
 
-            updateButton(formatMoney(num));
+            updateButton(
+                formatMoney(num)
+            );
 
         });
 
-        // INVEST CLICK
+        // =========================
+        // INVEST BUTTON CLICK
+        // =========================
+
         investBtn.addEventListener("click", () => {
 
-            let num = parseFloat(input.value);
-
-            if (isNaN(num)) {
-                alert("Enter amount");
-                return;
-            }
-
-            if (num < 10) {
-                alert("Minimum investment is ₦10.00");
-                return;
-            }
-
-            input.value = formatMoney(num);
-
-            updateButton(formatMoney(num));
-
-            alert("Invested ₦" + formatMoney(num));
+            alert("Investment placed!");
 
         });
 
     });
+
+    // =========================
+    // HELICOPTER SYSTEM
+    // =========================
+
+    const helicopter =
+        document.getElementById("helicopter");
+
+    const multiplier =
+        document.querySelector(".multiplier");
+
+    const flightPath =
+        document.getElementById("flightPath");
+
+    let x = 12;
+
+    let y = 4;
+
+    let multi = 1.00;
+
+    // STARTING PATH
+
+    let path =
+        `M ${x + 25} ${320 - y}`;
+
+    // ANIMATION FUNCTION
+
+    function animate() {
+
+        // MOVEMENT
+
+        x += 1.2;
+
+        y += 0.7;
+
+        // MULTIPLIER
+
+        multi += 0.01;
+
+        // UPDATE HELICOPTER POSITION
+
+        helicopter.style.left =
+            x + "px";
+
+        helicopter.style.bottom =
+            y + "px";
+
+        // UPDATE MULTIPLIER TEXT
+
+        multiplier.textContent =
+            multi.toFixed(2) + "x";
+
+        // DRAW CURVE
+
+        path +=
+            ` L ${x + 25} ${320 - y}`;
+
+        flightPath.setAttribute(
+            "d",
+            path
+        );
+    }
+
+    // RUN MOVEMENT
+
+    setInterval(animate, 30);
 
 });

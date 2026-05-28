@@ -1,60 +1,75 @@
 body{
     margin:0;
-
     background:white;
-
     font-family:Arial, sans-serif;
-
     display:flex;
     justify-content:center;
     align-items:center;
-
     height:100vh;
-
     overflow:hidden;
 }
 
-/* MAIN GAME CONTAINER */
-
 .game-container{
-
     width:25vw;
     min-width:380px;
     max-width:420px;
-
     height:92vh;
-
     background:#555;
-
     border-radius:25px;
-
     padding:16px;
-
     box-sizing:border-box;
-
     display:flex;
     flex-direction:column;
     justify-content:space-between;
-
     box-shadow:0 0 30px rgba(0,0,0,0.3);
-
     overflow:hidden;
 }
 
 /* GRAPH AREA */
 
 .graph-area{
-
     position:relative;
-
     width:100%;
     height:65%;
-
     background:#111;
-
     border-radius:18px;
-
     overflow:hidden;
+
+    z-index:1;
+}
+
+/* MULTIPLIER */
+
+.multiplier{
+    position:absolute;
+    top:20px;
+    left:50%;
+    transform:translateX(-50%);
+    color:#00ff66;
+    font-size:34px;
+    font-weight:bold;
+    z-index:20;
+}
+
+/* SVG CURVE */
+
+.curve-svg{
+    position:absolute;
+    width:100%;
+    height:100%;
+    left:0;
+    top:0;
+
+    z-index:2;
+
+    pointer-events:none;
+}
+
+#flightPath{
+    fill:none;
+    stroke:#00ff66;
+    stroke-width:4;
+    stroke-linecap:round;
 }
 
 /* AXES */
@@ -89,39 +104,74 @@ body{
     border-radius:50%;
 }
 
-.origin{ left:6px; bottom:6px; }
+.origin{
+    left:6px;
+    bottom:6px;
+}
 
-.y1{ left:6px; top:18%; }
-.y2{ left:6px; top:33%; }
-.y3{ left:6px; top:48%; }
-.y4{ left:6px; top:63%; }
-.y5{ left:6px; top:78%; }
+.y1{
+    left:6px;
+    top:18%;
+}
 
-.x1{ left:20%; bottom:6px; }
-.x2{ left:35%; bottom:6px; }
-.x3{ left:50%; bottom:6px; }
-.x4{ left:65%; bottom:6px; }
-.x5{ left:80%; bottom:6px; }
+.y2{
+    left:6px;
+    top:33%;
+}
+
+.y3{
+    left:6px;
+    top:48%;
+}
+
+.y4{
+    left:6px;
+    top:63%;
+}
+
+.y5{
+    left:6px;
+    top:78%;
+}
+
+.x1{
+    left:20%;
+    bottom:6px;
+}
+
+.x2{
+    left:35%;
+    bottom:6px;
+}
+
+.x3{
+    left:50%;
+    bottom:6px;
+}
+
+.x4{
+    left:65%;
+    bottom:6px;
+}
+
+.x5{
+    left:80%;
+    bottom:6px;
+}
 
 /* HELICOPTER */
 
 .helicopter{
-
     position:absolute;
 
     width:70px;
 
     left:12px;
-
     bottom:4px;
 
     z-index:10;
 
     pointer-events:none;
-
-    object-fit:contain;
-
-    background:none;
 }
 
 /* CONTROLS */
@@ -131,6 +181,9 @@ body{
     flex-direction:column;
     gap:14px;
     width:100%;
+
+    position:relative;
+    z-index:50;
 }
 
 .invest-row{
@@ -156,6 +209,7 @@ body{
     color:white;
     font-size:16px;
     padding-left:10px;
+    box-sizing:border-box;
 }
 
 .price-grid{
@@ -174,13 +228,25 @@ body{
     cursor:pointer;
 }
 
+.price-btn:hover{
+    background:#444;
+}
+
 .invest-btn{
     width:110px;
     height:95px;
+
     border:none;
     border-radius:12px;
+
     background:#00aa44;
+
     color:white;
+
     font-size:18px;
     font-weight:bold;
+
+    cursor:pointer;
+
+    flex-shrink:0;
 }
