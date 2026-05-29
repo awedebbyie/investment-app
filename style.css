@@ -25,37 +25,168 @@ body{
     overflow:hidden;
 }
 
-/* GRAPH AREA */
+/* =========================
+   GRAPH AREA
+========================= */
 
 .graph-area{
     position:relative;
     width:100%;
     height:65%;
-    background:#111;
+
     border-radius:18px;
+
     overflow:hidden;
+
     z-index:1;
+
+    background:
+        radial-gradient(circle at top left,
+        rgba(0,255,120,0.08),
+        transparent 30%),
+
+        radial-gradient(circle at bottom right,
+        rgba(0,140,255,0.08),
+        transparent 35%),
+
+        linear-gradient(
+            135deg,
+            #050505,
+            #111111,
+            #070707
+        );
 }
 
-/* MULTIPLIER */
+/* MOVING LIGHT EFFECT */
+
+.graph-area::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:200%;
+    height:200%;
+
+    top:-50%;
+    left:-50%;
+
+    background:
+        repeating-linear-gradient(
+            90deg,
+            rgba(255,255,255,0.02) 0px,
+            rgba(255,255,255,0.02) 1px,
+            transparent 1px,
+            transparent 80px
+        ),
+
+        repeating-linear-gradient(
+            0deg,
+            rgba(255,255,255,0.02) 0px,
+            rgba(255,255,255,0.02) 1px,
+            transparent 1px,
+            transparent 80px
+        );
+
+    animation:
+        moveGrid 18s linear infinite;
+
+    z-index:0;
+}
+
+/* GLOWING FOG */
+
+.graph-area::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:160%;
+    height:160%;
+
+    top:-30%;
+    left:-30%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(0,255,120,0.08),
+            transparent 60%
+        );
+
+    filter:blur(50px);
+
+    animation:
+        glowMove 10s ease-in-out infinite alternate;
+
+    z-index:0;
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+
+@keyframes moveGrid{
+
+    from{
+        transform:translate(0,0);
+    }
+
+    to{
+        transform:translate(80px,80px);
+    }
+}
+
+@keyframes glowMove{
+
+    from{
+        transform:
+            translate(-20px,-10px)
+            scale(1);
+    }
+
+    to{
+        transform:
+            translate(30px,20px)
+            scale(1.15);
+    }
+}
+
+/* =========================
+   MULTIPLIER
+========================= */
 
 .multiplier{
     position:absolute;
+
     top:20px;
     left:50%;
+
     transform:translateX(-50%);
+
     color:#00ff66;
+
     font-size:34px;
+
     font-weight:bold;
+
+    text-shadow:
+        0 0 10px rgba(0,255,120,0.7);
+
     z-index:20;
 }
 
-/* SVG CURVE */
+/* =========================
+   SVG CURVE
+========================= */
 
 .curve-svg{
     position:absolute;
+
     width:100%;
     height:100%;
+
     left:0;
     top:0;
 
@@ -65,42 +196,71 @@ body{
 }
 
 #flightPath{
+
     fill:none;
+
     stroke:#00ff66;
+
     stroke-width:2;
+
     stroke-linecap:round;
+
+    filter:
+        drop-shadow(0 0 6px rgba(0,255,120,0.7));
 }
 
-/* AXES */
+/* =========================
+   AXES
+========================= */
 
 .y-axis{
     position:absolute;
+
     left:6px;
     top:2px;
+
     width:8px;
     height:calc(100% - 4px);
+
     background:white;
+
     border-radius:20px;
+
+    z-index:3;
 }
 
 .x-axis{
     position:absolute;
+
     bottom:6px;
     left:2px;
+
     width:calc(100% - 4px);
+
     height:8px;
+
     background:white;
+
     border-radius:20px;
+
+    z-index:3;
 }
 
-/* DOTS */
+/* =========================
+   DOTS
+========================= */
 
 .dot{
     position:absolute;
+
     width:10px;
     height:10px;
+
     background:white;
+
     border-radius:50%;
+
+    z-index:3;
 }
 
 .origin{
@@ -158,7 +318,9 @@ body{
     bottom:6px;
 }
 
-/* HELICOPTER */
+/* =========================
+   HELICOPTER
+========================= */
 
 .helicopter{
     position:absolute;
@@ -171,9 +333,14 @@ body{
     z-index:10;
 
     pointer-events:none;
+
+    filter:
+        drop-shadow(0 0 10px rgba(255,255,255,0.35));
 }
 
-/* CONTROLS */
+/* =========================
+   CONTROLS
+========================= */
 
 .controls{
     display:flex;
@@ -202,12 +369,19 @@ body{
 .amount-input{
     width:100%;
     height:45px;
+
     background:#1a1a1a;
+
     border:none;
+
     border-radius:10px;
+
     color:white;
+
     font-size:16px;
+
     padding-left:10px;
+
     box-sizing:border-box;
 }
 
@@ -219,12 +393,20 @@ body{
 
 .price-btn{
     background:#333;
+
     color:white;
+
     border:none;
+
     border-radius:6px;
+
     font-size:11px;
+
     padding:4px 0;
+
     cursor:pointer;
+
+    transition:0.2s;
 }
 
 .price-btn:hover{
@@ -236,6 +418,7 @@ body{
     height:95px;
 
     border:none;
+
     border-radius:12px;
 
     background:#00aa44;
@@ -243,9 +426,13 @@ body{
     color:white;
 
     font-size:18px;
+
     font-weight:bold;
 
     cursor:pointer;
 
     flex-shrink:0;
+
+    box-shadow:
+        0 0 12px rgba(0,255,120,0.25);
 }
