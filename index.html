@@ -5,9 +5,12 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <title>Investment Game</title>
+    <title>Aviator Game</title>
 
     <link rel="stylesheet" href="style.css">
 
@@ -18,21 +21,37 @@
     <div class="game-container">
 
         <!-- GRAPH AREA -->
+
         <div class="graph-area">
 
             <!-- MULTIPLIER -->
-            <div class="multiplier">1.00x</div>
 
-            <!-- SVG CURVE -->
-            <svg class="curve-svg">
+            <div class="multiplier">
+                1.00x
+            </div>
+
+            <!-- SVG -->
+
+            <svg
+                class="curve-svg"
+                viewBox="0 0 400 320"
+                preserveAspectRatio="none"
+            >
+
+                <path id="fillArea"></path>
+
                 <path id="flightPath"></path>
+
             </svg>
 
             <!-- AXES -->
+
             <div class="y-axis"></div>
+
             <div class="x-axis"></div>
 
             <!-- DOTS -->
+
             <div class="dot origin"></div>
 
             <div class="dot y1"></div>
@@ -48,6 +67,7 @@
             <div class="dot x5"></div>
 
             <!-- HELICOPTER -->
+
             <img
                 src="helicopter.png"
                 alt="Helicopter"
@@ -58,9 +78,11 @@
         </div>
 
         <!-- CONTROLS -->
+
         <div class="controls">
 
             <!-- ROW 1 -->
+
             <div class="invest-row">
 
                 <div class="left-side">
@@ -89,11 +111,18 @@
 
                 </div>
 
-                <button class="invest-btn">INVEST</button>
+                <button class="invest-btn">
+
+                    <div>
+                        INVEST
+                    </div>
+
+                </button>
 
             </div>
 
             <!-- ROW 2 -->
+
             <div class="invest-row">
 
                 <div class="left-side">
@@ -122,7 +151,13 @@
 
                 </div>
 
-                <button class="invest-btn">INVEST</button>
+                <button class="invest-btn">
+
+                    <div>
+                        INVEST
+                    </div>
+
+                </button>
 
             </div>
 
@@ -130,7 +165,7 @@
 
     </div>
 
-    <script src="./script.js"></script>
+    <script src="script.js"></script>
 
 </body>
 

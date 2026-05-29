@@ -8,7 +8,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     rows.forEach((row) => {
 
-        const input = row.querySelector(".amount-input");
+        const input =
+            row.querySelector(".amount-input");
 
         const investBtn =
             row.querySelector(".invest-btn");
@@ -32,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // =========================
-        // UPDATE BUTTON TEXT
+        // UPDATE BUTTON
         // =========================
 
         function updateButton(value) {
@@ -43,13 +44,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 isNaN(parseFloat(value))
             ) {
 
-                investBtn.innerHTML = baseText;
+                investBtn.innerHTML = `
+                    <div>
+                        ${baseText}
+                    </div>
+                `;
 
                 return;
             }
 
             investBtn.innerHTML = `
-                <div>${baseText}</div>
+                <div>
+                    ${baseText}
+                </div>
 
                 <div style="
                     font-size:14px;
@@ -88,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         // =========================
-        // INPUT TYPING
+        // INPUT HANDLING
         // =========================
 
         input.addEventListener("input", () => {
@@ -100,7 +107,8 @@ document.addEventListener("DOMContentLoaded", () => {
             value =
                 value.replace(/[^0-9.]/g, "");
 
-            const parts = value.split(".");
+            const parts =
+                value.split(".");
 
             // ONLY ONE DOT
 
@@ -148,8 +156,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 input.value = "";
 
-                investBtn.innerHTML =
-                    baseText;
+                investBtn.innerHTML = `
+                    <div>
+                        ${baseText}
+                    </div>
+                `;
 
                 return;
             }
@@ -157,7 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
             let num =
                 parseFloat(value);
 
-            // MINIMUM ₦10.00
+            // MINIMUM ₦10
 
             if (num < 10) {
 
@@ -174,7 +185,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         // =========================
-        // INVEST CLICK
+        // INVEST BUTTON FIX
         // =========================
 
         investBtn.addEventListener("click", () => {
@@ -186,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // =========================
-    // HELICOPTER SYSTEM
+    // AVIATOR GRAPH SYSTEM
     // =========================
 
     const helicopter =
@@ -198,6 +209,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const flightPath =
         document.getElementById("flightPath");
 
+    const fillArea =
+        document.getElementById("fillArea");
+
     let x = 12;
 
     let y = 4;
@@ -208,12 +222,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let upwardSpeed = 1.1;
 
-    // =========================
-    // START PATH
-    // =========================
-
-    let path =
-        `M ${x + 25} ${320 - y}`;
+    let points = [];
 
     // =========================
     // ANIMATION
@@ -225,15 +234,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         x += 1.4;
 
-        // FIRST PHASE
-        // DIAGONAL TAKEOFF
+        // INITIAL TAKEOFF
 
-        if (x < 140) {
+        if (x < 130) {
 
             y += upwardSpeed;
         }
 
-        // SECOND PHASE
         // NATURAL MOTION
 
         else {
@@ -249,7 +256,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         multi += 0.01;
 
-        // POSITION
+        // HELICOPTER POSITION
 
         helicopter.style.left =
             x + "px";
@@ -262,18 +269,53 @@ document.addEventListener("DOMContentLoaded", () => {
         multiplier.textContent =
             multi.toFixed(2) + "x";
 
-        // CURVED GRAPH
+        // =========================
+        // GRAPH SYSTEM
+        // =========================
 
-        path +=
-            ` Q ${x - 5} ${320 - y}
-               ${x + 8} ${320 - y}`;
+        const svgY =
+            320 - y;
+
+        points.push({
+            x: x + 25,
+            y: svgY
+        });
+
+        // BUILD CURVE
+
+        let linePath =
+            `M 12 316`;
+
+        points.forEach((point) => {
+
+            linePath +=
+                ` L ${point.x} ${point.y}`;
+        });
+
+        // DRAW LINE
 
         flightPath.setAttribute(
             "d",
-            path
+            linePath
         );
 
-        // STOP BEFORE EDGE
+        // BUILD FILLED AREA
+
+        let fillPath =
+            linePath +
+            ` L ${x + 25} 316
+              L 12 316 Z`;
+
+        // DRAW FILLED AREA
+
+        fillArea.setAttribute(
+            "d",
+            fillPath
+        );
+
+        // =========================
+        // STOP
+        // =========================
 
         if (x > 360 || y > 290) {
 
