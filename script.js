@@ -1,203 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     // =========================
-    // INVEST SYSTEM
-    // =========================
-
-    const rows = document.querySelectorAll(".invest-row");
-
-    rows.forEach((row) => {
-
-        const input =
-            row.querySelector(".amount-input");
-
-        const investBtn =
-            row.querySelector(".invest-btn");
-
-        const priceBtns =
-            row.querySelectorAll(".price-btn");
-
-        const baseText = "INVEST";
-
-        // =========================
-        // FORMAT MONEY
-        // =========================
-
-        function formatMoney(value) {
-
-            let num = parseFloat(value);
-
-            if (isNaN(num)) return "";
-
-            return num.toFixed(2);
-        }
-
-        // =========================
-        // UPDATE BUTTON
-        // =========================
-
-        function updateButton(value) {
-
-            if (
-                value === "" ||
-                value === "." ||
-                isNaN(parseFloat(value))
-            ) {
-
-                investBtn.innerHTML = `
-                    <div>
-                        ${baseText}
-                    </div>
-                `;
-
-                return;
-            }
-
-            investBtn.innerHTML = `
-                <div>
-                    ${baseText}
-                </div>
-
-                <div style="
-                    font-size:14px;
-                    margin-top:4px;
-                ">
-                    (${value})
-                </div>
-            `;
-        }
-
-        // =========================
-        // QUICK PRICE BUTTONS
-        // =========================
-
-        priceBtns.forEach((btn) => {
-
-            btn.addEventListener("click", () => {
-
-                let value =
-                    parseFloat(btn.textContent);
-
-                if (value < 10) {
-
-                    value = 10;
-                }
-
-                input.value =
-                    formatMoney(value);
-
-                updateButton(
-                    formatMoney(value)
-                );
-
-            });
-
-        });
-
-        // =========================
-        // INPUT HANDLING
-        // =========================
-
-        input.addEventListener("input", () => {
-
-            let value = input.value;
-
-            // ALLOW ONLY NUMBERS + ONE DOT
-
-            value =
-                value.replace(/[^0-9.]/g, "");
-
-            const parts =
-                value.split(".");
-
-            // ONLY ONE DOT
-
-            if (parts.length > 2) {
-
-                value =
-                    parts[0] +
-                    "." +
-                    parts.slice(1).join("");
-            }
-
-            // BLOCK VALUES BELOW 10
-
-            if (
-                value !== "" &&
-                value !== "." &&
-                parseFloat(value) < 10
-            ) {
-
-                input.value = "10.00";
-
-                updateButton("10.00");
-
-                return;
-            }
-
-            input.value = value;
-
-            updateButton(value);
-
-        });
-
-        // =========================
-        // INPUT BLUR
-        // =========================
-
-        input.addEventListener("blur", () => {
-
-            let value = input.value;
-
-            if (
-                value === "" ||
-                value === "."
-            ) {
-
-                input.value = "";
-
-                investBtn.innerHTML = `
-                    <div>
-                        ${baseText}
-                    </div>
-                `;
-
-                return;
-            }
-
-            let num =
-                parseFloat(value);
-
-            // MINIMUM ₦10
-
-            if (num < 10) {
-
-                num = 10;
-            }
-
-            input.value =
-                formatMoney(num);
-
-            updateButton(
-                formatMoney(num)
-            );
-
-        });
-
-        // =========================
-        // INVEST BUTTON FIX
-        // =========================
-
-        investBtn.addEventListener("click", () => {
-
-            alert("Investment placed!");
-
-        });
-
-    });
-
-    // =========================
-    // AVIATOR GRAPH SYSTEM
+    // ELEMENTS
     // =========================
 
     const helicopter =
@@ -212,17 +16,115 @@ document.addEventListener("DOMContentLoaded", () => {
     const fillArea =
         document.getElementById("fillArea");
 
-    let x = 12;
+    // =========================
+    // INVEST SYSTEM
+    // =========================
 
-    let y = 4;
+    const rows =
+        document.querySelectorAll(".invest-row");
 
-    let multi = 1.00;
+    rows.forEach((row) => {
+
+        const input =
+            row.querySelector(".amount-input");
+
+        const investBtn =
+            row.querySelector(".invest-btn");
+
+        const priceBtns =
+            row.querySelectorAll(".price-btn");
+
+        // =========================
+        // INVEST BUTTON
+        // =========================
+
+        investBtn.addEventListener("click", () => {
+
+            alert("Investment placed!");
+
+        });
+
+        // =========================
+        // QUICK PRICE BUTTONS
+        // =========================
+
+        priceBtns.forEach(btn => {
+
+            btn.addEventListener("click", () => {
+
+                let value =
+                    parseFloat(btn.textContent);
+
+                if (value < 10) {
+
+                    value = 10;
+                }
+
+                input.value =
+                    value.toFixed(2);
+            });
+
+        });
+
+        // =========================
+        // INPUT FIX
+        // =========================
+
+        input.addEventListener("input", () => {
+
+            let value =
+                input.value;
+
+            value =
+                value.replace(/[^0-9.]/g, "");
+
+            let parts =
+                value.split(".");
+
+            if (parts.length > 2) {
+
+                value =
+                    parts[0] +
+                    "." +
+                    parts.slice(1).join("");
+            }
+
+            input.value =
+                value;
+        });
+
+        input.addEventListener("blur", () => {
+
+            let num =
+                parseFloat(input.value);
+
+            if (isNaN(num) || num < 10) {
+
+                num = 10;
+            }
+
+            input.value =
+                num.toFixed(2);
+
+        });
+
+    });
+
+    // =========================
+    // AVIATOR SYSTEM
+    // =========================
+
+    let x = 0;
+
+    let y = 320;
 
     let wave = 0;
 
-    let upwardSpeed = 1.1;
+    let multiplierValue = 1.00;
 
     let points = [];
+
+    let crashed = false;
 
     // =========================
     // ANIMATION
@@ -230,97 +132,149 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function animate() {
 
-        // MOVE RIGHT
+        // =========================
+        // STAGE 1
+        // STRAIGHT TAKEOFF
+        // TO 4TH X-AXIS DOT
+        // =========================
 
-        x += 1.4;
+        if (x < 260) {
 
-        // INITIAL TAKEOFF
+            x += 2.2;
 
-        if (x < 130) {
+            // PERFECT DIAGONAL
 
-            y += upwardSpeed;
+            y -= 1.25;
         }
 
-        // NATURAL MOTION
+        // =========================
+        // STAGE 2
+        // DYNAMIC CURVE MOTION
+        // =========================
+
+        else if (!crashed) {
+
+            wave += 0.05;
+
+            x += 1.6;
+
+            y +=
+                Math.sin(wave) * 2.4;
+
+            // CRASH CONDITION
+
+            if (x > 340) {
+
+                crashed = true;
+            }
+        }
+
+        // =========================
+        // STAGE 3
+        // CRASH FALL
+        // =========================
 
         else {
 
-            wave += 0.06;
+            x += 2;
 
-            y +=
-                upwardSpeed +
-                Math.sin(wave) * 1.5;
+            y += 5;
+
+            if (y > 340) {
+
+                clearInterval(loop);
+            }
         }
 
+        // =========================
         // MULTIPLIER
+        // =========================
 
-        multi += 0.01;
+        multiplierValue += 0.01;
 
+        multiplier.textContent =
+            multiplierValue.toFixed(2) + "x";
+
+        // =========================
         // HELICOPTER POSITION
+        // =========================
 
         helicopter.style.left =
             x + "px";
 
         helicopter.style.bottom =
-            y + "px";
-
-        // MULTIPLIER DISPLAY
-
-        multiplier.textContent =
-            multi.toFixed(2) + "x";
+            (320 - y) + "px";
 
         // =========================
-        // GRAPH SYSTEM
+        // SAVE GRAPH POINT
         // =========================
 
-        const svgY =
-            320 - y;
-
+        
         points.push({
-            x: x + 25,
-            y: svgY
+
+            x: x + 10,
+        
+            y: y - 9
         });
+        
+        // PREVENT TRAIL DRAWING TOO EARLY
+        
+        if(points.length < 2){
+        
+            return;
+        }
 
-        // BUILD CURVE
+        // =========================
+        // GRAPH CURVE
+        // =========================
 
-        let linePath =
-            `M 12 316`;
+        let path = "";
 
-        points.forEach((point) => {
-
-            linePath +=
-                ` L ${point.x} ${point.y}`;
-        });
-
-        // DRAW LINE
-
+        for (let i = 0; i < points.length; i++) {
+        
+            const p = points[i];
+        
+            let dynamicY = p.y;
+        
+            if (i === 0) {
+        
+                path += `M ${p.x} ${dynamicY}`;
+        
+            } else {
+        
+                const prev = points[i - 1];
+        
+                const midX =
+                    (prev.x + p.x) / 2;
+        
+                const midY =
+                    (prev.y + dynamicY) / 2;
+        
+                path += `
+                    Q ${prev.x} ${prev.y}
+                    ${midX} ${midY}
+                `;
+            }
+        }
+        
         flightPath.setAttribute(
             "d",
-            linePath
+            path
         );
 
-        // BUILD FILLED AREA
+        // =========================
+        // FILL AREA
+        // =========================
 
-        let fillPath =
-            linePath +
-            ` L ${x + 25} 316
-              L 12 316 Z`;
-
-        // DRAW FILLED AREA
+        let fill =
+            path +
+            ` L ${x + 25} 320
+              L 0 320 Z`;
 
         fillArea.setAttribute(
             "d",
-            fillPath
+            fill
         );
-
-        // =========================
-        // STOP
-        // =========================
-
-        if (x > 360 || y > 290) {
-
-            clearInterval(loop);
-        }
     }
 
     // =========================
@@ -328,6 +282,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // =========================
 
     const loop =
-        setInterval(animate, 30);
+        setInterval(
+            animate,
+            30
+        );
 
 });
