@@ -76,6 +76,9 @@ body{
 
 .graph-area::before{
 
+    position: relative;
+    overflow: hidden;
+
     content:"";
 
     position:absolute;
@@ -103,10 +106,15 @@ body{
             transparent 80px
         );
 
+
     animation:
         moveGrid 18s linear infinite;
 
     z-index:0;
+
+    background-image: url("bg.png");
+    background-color: rgba(0, 0, 0, 0.7);
+    background-blend-mode: darken;
 }
 
 @keyframes moveGrid{
