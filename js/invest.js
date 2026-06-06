@@ -8,12 +8,64 @@ document.addEventListener("DOMContentLoaded", () => {
         const investBtn = row.querySelector(".invest-btn");
         const priceBtns = row.querySelectorAll(".price-btn");
 
-        // 👉 QUICK PRICE BUTTONS
-        priceBtns.forEach(btn => {
+        // =========================
+        // ONLY NUMBERS + DECIMALS
+        // =========================
+        input.addEventListener("input", () => {
+
+            // remove letters automatically (but don't block typing)
+            input.value = input.value.replace(/[^0-9.]/g, "");
+
+            let value = Number(input.value);
+
+            if (input.value === "" || isNaN(value)) {
+                investBtn.innerHTML = `<span>INVEST</span>`;
+                return;
+            }
+
+            if (value < 10) {
+                investBtn.innerHTML = `
+                    <span>INVEST</span>
+                    <small>(Minimum ₦10)</small>
+                `;
+                return;
+            }
+
+            investBtn.innerHTML = `
+                <span>INVEST</span>
+                <small>(₦${value.toFixed(2)})</small>
+            `;
+        });
+
+        // =========================
+        // BLUR FIX (FINAL CLEAN VALUE)
+        // =========================
+        input.addEventListener("blur", () => {
+
+            let value = Number(input.value);
+
+            if (isNaN(value) || value < 10) {
+                value = 10;
+            }
+
+            input.value = value.toFixed(2);
+
+            investBtn.innerHTML = `
+                <span>INVEST</span>
+                <small>(₦${value.toFixed(2)})</small>
+            `;
+        });
+
+        // =========================
+        // QUICK PRICE BUTTONS
+        // =========================
+        priceBtns.forEach((btn) => {
 
             btn.addEventListener("click", () => {
 
-                let value = parseFloat(btn.textContent);
+                let value = Number(btn.textContent);
+
+                if (value < 10) value = 10;
 
                 input.value = value.toFixed(2);
 
@@ -22,44 +74,37 @@ document.addEventListener("DOMContentLoaded", () => {
                     <small>(₦${value.toFixed(2)})</small>
                 `;
             });
+
         });
 
-        // 👉 INPUT VALIDATION (NO BLOCKING WHILE TYPING)
-        input.addEventListener("input", () => {
-
-            input.value = input.value.replace(/[^0-9.]/g, "");
-
-            const parts = input.value.split(".");
-            if (parts.length > 2) {
-                input.value = parts[0] + "." + parts.slice(1).join("");
-            }
-
-            const num = parseFloat(input.value);
-
-            if (!isNaN(num)) {
-                investBtn.innerHTML = `
-                    <span>INVEST</span>
-                    <small>(₦${num})</small>
-                `;
-            }
-        });
-
-        // 👉 CLICK INVEST (FINAL CHECK HERE)
+        // =========================
+        // INVEST CLICK
+        // =========================
         investBtn.addEventListener("click", () => {
 
-            const amount = parseFloat(input.value);
-
-            if (isNaN(amount)) {
-                alert("Enter amount");
+            let value = Number(input.value);
+        
+            if (isNaN(value)) {
+                alert("Enter a valid amount");
                 return;
             }
-
-            if (amount < 10) {
+        
+            if (value < 10) {
+        
                 alert("Minimum investment is ₦10");
-                return;
+        
+                input.value = "10.00";
+        
+                investBtn.innerHTML = `
+                    <span>INVEST</span>
+                    <small>(₦10.00)</small>
+                `;
+        
+                return; // STOP HERE - DO NOT PLACE BET
             }
-
-            alert("Investment placed!");
+        
+            // Place bet only when amount is already valid
+            alert(`Investment placed: ₦${value.toFixed(2)}`);
         });
 
     });
