@@ -3,8 +3,7 @@ body{
     background:white;
     font-family:Arial, sans-serif;
     display:flex;
-    justify-content:center;
-    align-items:center;
+    justify-content: center;
     height:100vh;
     overflow:hidden;
 }
@@ -13,11 +12,11 @@ body{
     width:25vw;
     min-width:380px;
     max-width:420px;
-    height:92vh;
+    height:100vh;
 
     background:#555;
 
-    border-radius:25px;
+    border-radius:0px;
 
     padding:16px;
 
@@ -26,11 +25,12 @@ body{
     display:flex;
     flex-direction:column;
 
-    justify-content:space-between;
+    justify-content:flex-start;
 
     box-shadow:0 0 30px rgba(0,0,0,0.3);
 
     overflow:hidden;
+    height:100vh;
 }
 
 /* =========================
@@ -43,12 +43,12 @@ body{
 
     width:100%;
 
-    height:65%;
+    height:50%;
 
     flex-shrink:0;
 
     border-radius:18px;
-
+    margin-bottom: 10px;
     overflow:hidden;
 
     isolation:isolate;
@@ -68,6 +68,40 @@ body{
             #101010,
             #060606
         );
+        
+}
+
+/* =========================
+   TOP BUTTONS (NEW SECTION)
+========================= */
+
+.top-bar{
+    width:100%;
+    height:40px;
+
+    display:flex;
+    gap:10px;
+    box-sizing: border-box;
+    align-items:center;
+    justify-content:flex-start;
+    margin-bottom: 10px;
+    padding:0;
+}
+
+.top-btn{
+    background:#222;
+    color:white;
+
+    border:none;
+    border-radius:8px;
+
+    padding:6px 12px;
+
+    cursor:pointer;
+}
+
+.top-btn:hover{
+    background:#333;
 }
 
 /* =========================
@@ -347,7 +381,7 @@ body{
     position:relative;
 
     z-index:999;
-
+    box-sizing: border-box;
     margin-top:12px;
 }
 
