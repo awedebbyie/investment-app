@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aviator Game - Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="login-container">
+        
+        <!-- Top Bar - Moved higher with gap -->
+        <div class="top-bar" style="margin-top: 30px; width:100%; padding:0 20px; box-sizing:border-box;">
+            <button class="top-btn" onclick="window.location.href='index.html'" 
+                    style="background:#333; color:white;">
+                ← Back to Game
+            </button>
+        </div>
+
+        <!-- Logo area (replace src when you send the logo) -->
+        <div style="margin: 20px 0 30px 0;">
+            <img src="aviator-logo.png" alt="Aviator Logo" style="max-width:180px; height:auto;">
+        </div>
+
+        <h1 style="color:white; margin:0 0 40px 0; font-size:32px; text-align:center;">Welcome</h1>
+
+        <!-- Login Form -->
+        <div style="width:100%; max-width:320px; text-align:center;">
+            
+            <input 
+                type="text" 
+                class="amount-input" 
+                placeholder="Username or Email"
+                style="margin-bottom:16px; background:#333; color:white;"
+            >
+
+            <input 
+                type="password" 
+                class="amount-input" 
+                placeholder="Password"
+                style="margin-bottom:25px; background:#333; color:white;"
+            >
+
+            <button class="invest-btn" style="width:100%; height:58px; margin-bottom:18px; background:#00aa44;">
+                LOGIN
+            </button>
+
+            <div style="text-align:center; margin:15px 0;">
+                <a href="#" style="color:#00aa44; text-decoration:none; font-size:14px;">Forgot Password?</a>
+            </div>
+
+            <div style="text-align:center; margin-top:35px; color:#bbb; font-size:14px;">
+                Don't have an account? 
+                <a href="#" style="color:#00aa44; text-decoration:none;">Register</a>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                alert('Login functionality goes here');
+            }
+        });
+    </script>
+</body>
+</html>

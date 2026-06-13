@@ -32,6 +32,52 @@ body{
     overflow:hidden;
     height:100vh;
 }
+/* ========================
+   LOGIN PAGE SPECIFIC STYLES
+   ======================== */
+
+   .login-container {
+    width: 25vw;
+    min-width: 380px;
+    max-width: 420px;
+    height: 100vh;
+    margin: 0 auto;
+    background: #111;          /* Changed to BLACK as you requested */
+    gap: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+/* Make inputs and other dark elements gray for good visibility on black background */
+.login-container .amount-input {
+    background: #333;          /* Gray instead of very dark */
+    color: white;
+    border: 1px solid #555;
+}
+
+.login-container .top-bar {
+    margin-top: 30px;          /* Creates the gap from the top you wanted */
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+    justify-content: flex-start;
+}
+
+/* Optional: Make top button slightly lighter gray */
+.login-container .top-btn {
+    background: #333;
+    color: white;
+}
+
+.login-container h1 {
+    color: white;
+    margin: 0 0 40px 0;
+    font-size: 32px;
+    text-align: center;
+}
 
 /* =========================
    GRAPH AREA
