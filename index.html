@@ -13,6 +13,9 @@
     <title>Aviator Game</title>
 
     <link rel="stylesheet" href="style.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 
 </head>
 
@@ -184,8 +187,7 @@ const firebaseConfig = {
   projectId: "success-75f95",
   storageBucket: "success-75f95.firebasestorage.app",
   messagingSenderId: "774097711994",
-  appId: "1:774097711994:web:cb2729f49ed1348b2ddcc3",
-  measurementId: "G-23QCNX9JN1"
+  appId: "1:774097711994:web:cb2729f49ed1348b2ddcc3"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -194,66 +196,42 @@ const auth = firebase.auth();
 const topBar = document.getElementById('topBar');
 
 function updateTopBar(user) {
-    console.log("updateTopBar called. User:", user ? user.email : "null"); // For debugging
-
     if (user) {
         topBar.innerHTML = `
             <div style="display:flex; align-items:center; justify-content:space-between; width:100%; padding:0 12px; box-sizing:border-box;">
-                <!-- Balance -->
                 <div style="color:#00ff88; font-weight:bold; font-size:18px;">
                     ₦<span id="balance">0.00</span>
                 </div>
-
-                <!-- Deposit & Withdraw -->
                 <div style="display:flex; gap:12px;">
-                    <button onclick="deposit()" style="background:#00aa44; color:white; border:none; padding:8px 20px; border-radius:8px; font-weight:bold; cursor:pointer;">
-                        DEPOSIT
-                    </button>
-                    <button onclick="withdraw()" style="background:#ff8800; color:white; border:none; padding:8px 20px; border-radius:8px; font-weight:bold; cursor:pointer;">
-                        WITHDRAW
-                    </button>
+                    <button onclick="deposit()" style="background:#00aa44; color:white; border:none; padding:8px 20px; border-radius:8px; font-weight:bold; cursor:pointer;">DEPOSIT</button>
+                    <button onclick="withdraw()" style="background:#ff8800; color:white; border:none; padding:8px 20px; border-radius:8px; font-weight:bold; cursor:pointer;">WITHDRAW</button>
                 </div>
-
-                <!-- Settings -->
-                <button onclick="showSettings()" style="background:none; border:none; font-size:28px; cursor:pointer; color:white; padding:5px;">
-                    ⚙️
-                </button>
+                <button onclick="showSettings()" style="background:none; border:none; font-size:28px; cursor:pointer; color:white; padding:5px;">⚙️</button>
             </div>
         `;
     } else {
         topBar.innerHTML = `
-            <button class="top-btn" onclick="window.location.href='login.html'">
-                Login
-            </button>
+            <button class="top-btn" onclick="window.location.href='login.html'">Login</button>
         `;
     }
 }
 
-// Main auth listener
-auth.onAuthStateChanged((user) => {
-    updateTopBar(user);
-});
+// Main listener
+auth.onAuthStateChanged(updateTopBar);
 
-// Extra aggressive fallback (helps after redirect)
+// Important: Force correct initial state
 window.addEventListener('load', () => {
-    console.log("Page loaded - checking auth...");
+    // Small delay to let Firebase check auth state
     setTimeout(() => {
         updateTopBar(auth.currentUser);
-    }, 800);
-
-    setTimeout(() => {
-        updateTopBar(auth.currentUser);
-    }, 1800);
+    }, 600);
 });
 
-// Functions
 function deposit() { alert("Deposit feature coming soon!"); }
 function withdraw() { alert("Withdraw feature coming soon!"); }
 function showSettings() { 
     if (confirm("Do you want to Logout?")) {
-        auth.signOut().then(() => {
-            window.location.reload();
-        });
+        auth.signOut().then(() => window.location.reload());
     }
 }
 </script>
