@@ -138,30 +138,44 @@
         });
 
         // Google Sign Up
-        googleBtn.addEventListener('click', async () => {
-            try {
-                googleBtn.disabled = true;
-                googleBtn.textContent = "Connecting to Google...";
-                
-                const provider = new firebase.auth.GoogleAuthProvider();
-                await auth.signInWithPopup(provider);
-                
-                showMessage("Account created with Google! Redirecting to login...", "lime");
-                
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 1800);
-            } catch (error) {
-                showMessage(error.message);
-            } finally {
-                googleBtn.disabled = false;
-                googleBtn.innerHTML = `<img src="https://www.google.com/images/branding/googleg/1x/googleg_standard_color_24dp.png" alt="Google" width="24" height="24" style="filter: brightness(0) invert(1);"> Sign up with Google`;
-            }
-        });
+        // Google Sign-In (Improved)
+googleBtn.addEventListener('click', async () => {
+    try {
+        googleBtn.disabled = true;
+        googleBtn.textContent = "Connecting to Google...";
 
-        document.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') registerBtn.click();
-        });
+        const persistenceMode = keepSignedIn.checked 
+            ? firebase.auth.Auth.Persistence.LOCAL 
+            : firebase.auth.Auth.Persistence.SESSION;
+
+        await firebase.auth().setPersistence(persistenceMode);
+
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.addScope('email');   // Added this
+
+        const result = await auth.signInWithPopup(provider);
+        
+        showMessage("Login successful! Redirecting...", "lime");
+        
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 1200);
+
+    } catch (error) {
+        console.error("Google Error:", error.code, error.message);
+        
+        if (error.code === "auth/popup-blocked") {
+            showMessage("Please allow popups for this website", "orange");
+        } else if (error.code === "auth/unauthorized-domain") {
+            showMessage("Please add 'localhost' in Firebase Authorized Domains", "red");
+        } else {
+            showMessage("Google sign-in failed. Try again or use Email.", "red");
+        }
+    } finally {
+        googleBtn.disabled = false;
+        googleBtn.innerHTML = `<img src="https://www.google.com/images/branding/googleg/1x/googleg_standard_color_24dp.png" alt="Google" width="24" height="24" style="filter: brightness(0) invert(1);"> Continue with Google`;
+    }
+})
     </script>
 </body>
 </html>

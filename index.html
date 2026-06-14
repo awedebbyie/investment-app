@@ -18,11 +18,14 @@
 
 <body>
         <div class="game-container">
-            <div class="top-bar">
-                <button class="top-btn" onclick="window.location.href='login.html'">
-                    Login
-                </button>
-            </div>
+           <!-- Top Bar -->
+<!-- Top Bar -->
+<div class="top-bar" id="topBar">
+    <!-- Default fallback (shown before JS loads) -->
+    <button class="top-btn" onclick="window.location.href='login.html'">
+        Login
+    </button>
+</div>
         <!-- GRAPH AREA -->
 
         <div class="graph-area">
@@ -172,6 +175,88 @@
     <script src="js/aviator.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/main.js"></script>
+
+<script>
+// ==================== FIREBASE CONFIG ====================
+const firebaseConfig = {
+     apiKey: "AIzaSyCd2RbRPpx_qnU7W99ohe8el0rSpcYyIOU",
+  authDomain: "success-75f95.firebaseapp.com",
+  projectId: "success-75f95",
+  storageBucket: "success-75f95.firebasestorage.app",
+  messagingSenderId: "774097711994",
+  appId: "1:774097711994:web:cb2729f49ed1348b2ddcc3",
+  measurementId: "G-23QCNX9JN1"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+const topBar = document.getElementById('topBar');
+
+function updateTopBar(user) {
+    console.log("updateTopBar called. User:", user ? user.email : "null"); // For debugging
+
+    if (user) {
+        topBar.innerHTML = `
+            <div style="display:flex; align-items:center; justify-content:space-between; width:100%; padding:0 12px; box-sizing:border-box;">
+                <!-- Balance -->
+                <div style="color:#00ff88; font-weight:bold; font-size:18px;">
+                    ₦<span id="balance">0.00</span>
+                </div>
+
+                <!-- Deposit & Withdraw -->
+                <div style="display:flex; gap:12px;">
+                    <button onclick="deposit()" style="background:#00aa44; color:white; border:none; padding:8px 20px; border-radius:8px; font-weight:bold; cursor:pointer;">
+                        DEPOSIT
+                    </button>
+                    <button onclick="withdraw()" style="background:#ff8800; color:white; border:none; padding:8px 20px; border-radius:8px; font-weight:bold; cursor:pointer;">
+                        WITHDRAW
+                    </button>
+                </div>
+
+                <!-- Settings -->
+                <button onclick="showSettings()" style="background:none; border:none; font-size:28px; cursor:pointer; color:white; padding:5px;">
+                    ⚙️
+                </button>
+            </div>
+        `;
+    } else {
+        topBar.innerHTML = `
+            <button class="top-btn" onclick="window.location.href='login.html'">
+                Login
+            </button>
+        `;
+    }
+}
+
+// Main auth listener
+auth.onAuthStateChanged((user) => {
+    updateTopBar(user);
+});
+
+// Extra aggressive fallback (helps after redirect)
+window.addEventListener('load', () => {
+    console.log("Page loaded - checking auth...");
+    setTimeout(() => {
+        updateTopBar(auth.currentUser);
+    }, 800);
+
+    setTimeout(() => {
+        updateTopBar(auth.currentUser);
+    }, 1800);
+});
+
+// Functions
+function deposit() { alert("Deposit feature coming soon!"); }
+function withdraw() { alert("Withdraw feature coming soon!"); }
+function showSettings() { 
+    if (confirm("Do you want to Logout?")) {
+        auth.signOut().then(() => {
+            window.location.reload();
+        });
+    }
+}
+</script>
 
 </body>
 

@@ -115,75 +115,92 @@
         }
 
         // Email/Password Login
-        loginBtn.addEventListener('click', async () => {
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value.trim();
+        // Email & Password Login
+loginBtn.addEventListener('click', async () => {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
 
-            if (!email || !password) {
-                showMessage("Please enter email and password");
-                return;
-            }
+    if (!email || !password) {
+        showMessage("Please enter email and password");
+        return;
+    }
 
-            loginBtn.disabled = true;
-            loginBtn.textContent = "LOGGING IN...";
+    loginBtn.disabled = true;
+    loginBtn.textContent = "LOGGING IN...";
 
-            try {
-                // Set persistence based on "Keep me signed in"
-                const persistenceMode = keepSignedIn.checked 
-                    ? firebase.auth.Auth.Persistence.LOCAL 
-                    : firebase.auth.Auth.Persistence.SESSION;
+    try {
+        const persistenceMode = keepSignedIn.checked 
+            ? firebase.auth.Auth.Persistence.LOCAL 
+            : firebase.auth.Auth.Persistence.SESSION;
 
-                await firebase.auth().setPersistence(persistenceMode);
+        await firebase.auth().setPersistence(persistenceMode);
 
-                const userCredential = await auth.signInWithEmailAndPassword(email, password);
-                
-                // Save email if "Remember Me" is checked
-                if (rememberMe.checked) {
-                    localStorage.setItem('rememberedEmail', email);
-                } else {
-                    localStorage.removeItem('rememberedEmail');
-                }
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        
+        if (rememberMe.checked) {
+            localStorage.setItem('rememberedEmail', email);
+        }
 
-                showMessage("Login successful! Redirecting...", "lime");
-                
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1200);
-            } catch (error) {
-                showMessage(error.message);
-            } finally {
-                loginBtn.disabled = false;
-                loginBtn.textContent = "LOGIN";
-            }
-        });
+        showMessage("Login successful! Redirecting...", "lime");
+        
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 1500);
+    } catch (error) {
+        console.error("Login Error:", error.code, error.message);
+        if (error.code === "auth/invalid-credential") {
+            showMessage("Invalid email or password. Please check your details.");
+        } else if (error.code === "auth/user-not-found") {
+            showMessage("No account found with this email.");
+        } else {
+            showMessage(error.message);
+        }
+    } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = "LOGIN";
+    }
+});
 
         // Google Sign-In
-        googleBtn.addEventListener('click', async () => {
-            const persistenceMode = keepSignedIn.checked 
-                ? firebase.auth.Auth.Persistence.LOCAL 
-                : firebase.auth.Auth.Persistence.SESSION;
+        // Google Sign-In
+// Google Sign-In (Improved)
+googleBtn.addEventListener('click', async () => {
+    try {
+        googleBtn.disabled = true;
+        googleBtn.textContent = "Connecting to Google...";
 
-            try {
-                await firebase.auth().setPersistence(persistenceMode);
-                
-                googleBtn.disabled = true;
-                googleBtn.textContent = "Connecting to Google...";
-                
-                const provider = new firebase.auth.GoogleAuthProvider();
-                await auth.signInWithPopup(provider);
-                
-                showMessage("Google login successful! Redirecting...", "lime");
-                
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1200);
-            } catch (error) {
-                showMessage(error.message);
-            } finally {
-                googleBtn.disabled = false;
-                googleBtn.innerHTML = `<img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" width="20" height="20"> Continue with Google`;
-            }
-        });
+        const persistenceMode = keepSignedIn.checked 
+            ? firebase.auth.Auth.Persistence.LOCAL 
+            : firebase.auth.Auth.Persistence.SESSION;
+
+        await firebase.auth().setPersistence(persistenceMode);
+
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.addScope('email');   // Added this
+
+        const result = await auth.signInWithPopup(provider);
+        
+        showMessage("Login successful! Redirecting...", "lime");
+        
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 1200);
+
+    } catch (error) {
+        console.error("Google Error:", error.code, error.message);
+        
+        if (error.code === "auth/popup-blocked") {
+            showMessage("Please allow popups for this website", "orange");
+        } else if (error.code === "auth/unauthorized-domain") {
+            showMessage("Please add 'localhost' in Firebase Authorized Domains", "red");
+        } else {
+            showMessage("Google sign-in failed. Try again or use Email.", "red");
+        }
+    } finally {
+        googleBtn.disabled = false;
+        googleBtn.innerHTML = `<img src="https://www.google.com/images/branding/googleg/1x/googleg_standard_color_24dp.png" alt="Google" width="24" height="24" style="filter: brightness(0) invert(1);"> Continue with Google`;
+    }
+});
 
         // Forgot Password
         document.getElementById('forgotPassword').addEventListener('click', async (e) => {
