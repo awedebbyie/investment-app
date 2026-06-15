@@ -120,14 +120,9 @@
 
                 </div>
 
-                <button class="invest-btn">
-
-                    <div>
-                        INVEST
-                    </div>
-
-                </button>
-
+                <button id="investBtn" class="invest-btn">
+    INVEST
+</button>
             </div>
 
             <!-- ROW 2 -->
@@ -234,6 +229,58 @@ function showSettings() {
         auth.signOut().then(() => window.location.reload());
     }
 }
+firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+        // LOGGED IN UI
+        document.getElementById("topBar").innerHTML = `
+            <button>Deposit</button>
+            <button>Withdraw</button>
+            <button>Settings</button>
+            <span>Balance: ₦0</span>
+        `;
+    } else {
+        // NOT LOGGED IN UI
+        document.getElementById("topBar").innerHTML = `
+            <button onclick="location.href='login.html'">Login</button>
+        `;
+    }
+});
+
+document.getElementById("investBtn").addEventListener("click", () => {
+    const user = firebase.auth().currentUser;
+
+    if (!user) {
+        showMessage("Please login to invest", "red");
+        setTimeout(() => {
+            window.location.href = "login.html";
+        }, 1000);
+        return;
+    }
+
+    // continue invest logic here
+});
+
+firebase.auth().onAuthStateChanged((user) => {
+
+    if (user) {
+        console.log("User logged in:", user.email);
+
+        // Example: show balance / enable features
+        document.getElementById("balance").style.display = "block";
+        document.getElementById("investBtn").disabled = false;
+
+    } else {
+        console.log("No user logged in");
+
+        // Lock features
+        document.getElementById("balance").style.display = "none";
+        document.getElementById("investBtn").disabled = true;
+
+        // OPTIONAL: redirect to login if you want strict mode
+        // window.location.href = "login.html";
+    }
+
+});
 </script>
 
 </body>
