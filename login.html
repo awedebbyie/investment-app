@@ -89,6 +89,24 @@
     </div>
 
     <script>
+        window.addEventListener("load", () => {
+
+    auth.getRedirectResult()
+    .then((result) => {
+        if (result.user) {
+            window.location.href = "index.html";
+        }
+    })
+    .catch((error) => {
+        console.error("Redirect error:", error);
+    });
+
+    const savedEmail = localStorage.getItem('rememberedEmail');
+    if (savedEmail) {
+        document.getElementById('email').value = savedEmail;
+        rememberMe.checked = true;
+    }
+});
         // ==================== YOUR FIREBASE CONFIG ====================
         const firebaseConfig = {
             apiKey: "AIzaSyCd2RbRPpx_qnU7W99ohe8el0rSpcYyIOU",
@@ -99,93 +117,105 @@
   appId: "1:774097711994:web:cb2729f49ed1348b2ddcc3",
   measurementId: "G-23QCNX9JN1"
         };
-
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+const auth = firebase.auth();
 
-        const loginBtn = document.getElementById('loginBtn');
-        const googleBtn = document.getElementById('googleBtn');
-        const messageDiv = document.getElementById('message');
-        const rememberMe = document.getElementById('rememberMe');
-        const keepSignedIn = document.getElementById('keepSignedIn');
+/* 1. DOM elements */
+const messageDiv = document.getElementById('message');
+const rememberMe = document.getElementById('rememberMe');
+const keepSignedIn = document.getElementById('keepSignedIn');
+const loginBtn = document.getElementById('loginBtn');
+const googleBtn = document.getElementById('googleBtn');
 
-        function showMessage(text, color = "#ff4444") {
-            messageDiv.style.color = color;
-            messageDiv.textContent = text;
-        }
+/* 2. helper */
+function showMessage(text, color = "#ff4444") {
+    messageDiv.style.color = color;
+    messageDiv.textContent = text;
+}
 
         // Email & Password Login
 loginBtn.addEventListener('click', async () => {
     const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
+    const password = document.getElementById('password').value;
 
     if (!email || !password) {
         showMessage("Please enter email and password");
         return;
     }
 
+    // ✅ FIX: disable button correctly while loading
     loginBtn.disabled = true;
     loginBtn.textContent = "LOGGING IN...";
+    loginBtn.disabled = false;
+loginBtn.textContent = "LOGIN";
 
     try {
-        const persistenceMode = keepSignedIn.checked 
-            ? firebase.auth.Auth.Persistence.LOCAL 
-            : firebase.auth.Auth.Persistence.SESSION;
-
-        await firebase.auth().setPersistence(persistenceMode);
-
         const userCredential = await auth.signInWithEmailAndPassword(email, password);
-        
+
         if (rememberMe.checked) {
             localStorage.setItem('rememberedEmail', email);
         }
 
         showMessage("Login successful! Redirecting...", "lime");
-        
+
         setTimeout(() => {
             window.location.href = 'index.html';
         }, 1500);
+
     } catch (error) {
         console.error("Login Error:", error.code, error.message);
+
         if (error.code === "auth/invalid-credential") {
             showMessage("Invalid email or password. Please check your details.");
-        } else if (error.code === "auth/user-not-found") {
+        } 
+        else if (error.code === "auth/user-not-found") {
             showMessage("No account found with this email.");
-        } else {
-            showMessage(error.message);
+        } 
+        else if (error.code === "auth/wrong-password") {
+            showMessage("Incorrect password");
+        } 
+        else if (error.code === "auth/too-many-requests") {
+            showMessage("Too many attempts. Try later.");
+        } 
+        else {
+            showMessage("Something went wrong");
         }
+
     } finally {
+        // ✅ ALWAYS reset button (this is the important part)
         loginBtn.disabled = false;
         loginBtn.textContent = "LOGIN";
     }
 });
-
-// Google Sign-In (using Redirect - more stable)
+// Google Sign-In (popup method)
 googleBtn.addEventListener('click', async () => {
     try {
         googleBtn.disabled = true;
-        googleBtn.textContent = "Connecting to Google...";
-
-        const persistenceMode = keepSignedIn ? 
-            firebase.auth.Auth.Persistence.LOCAL : 
-            firebase.auth.Auth.Persistence.SESSION;
-
-        await firebase.auth().setPersistence(persistenceMode);
 
         const provider = new firebase.auth.GoogleAuthProvider();
-        provider.addScope('email');
+        provider.setCustomParameters({
+            prompt: 'select_account'
+        });
 
-        // Use Redirect instead of Popup
-        await auth.signInWithRedirect(provider);
+        const result = await auth.signInWithPopup(provider);
+
+        console.log("SUCCESS", result);
+        showMessage("Logged in Successfully", "lime");
+        window.location.href = "index.html";
 
     } catch (error) {
-        console.error(error);
-        showMessage("Google sign-in failed. Please try again.", "red");
+        console.error("GOOGLE ERROR:", error);
+
+        if (error.code === "auth/popup-closed-by-user") {
+            showMessage("Login cancelled", "orange");
+        } else {
+            showMessage("Google login failed. Try again", "red");
+        }
+
+    } finally {
         googleBtn.disabled = false;
-        googleBtn.textContent = "Continue with Google";
     }
 });
-
         // Forgot Password
         document.getElementById('forgotPassword').addEventListener('click', async (e) => {
             e.preventDefault();
@@ -198,24 +228,16 @@ googleBtn.addEventListener('click', async () => {
                 await auth.sendPasswordResetEmail(email);
                 showMessage("Password reset link sent!", "#00aa44");
             } catch (error) {
-                showMessage(error.message);
-            }
+    showMessage("Failed to send reset email", "red");
+}
         });
-
-        // Auto-fill remembered email
-        window.addEventListener('load', () => {
-            const savedEmail = localStorage.getItem('rememberedEmail');
-            if (savedEmail) {
-                document.getElementById('email').value = savedEmail;
-                rememberMe.checked = true;
-            }
-        });
-
 
         // Enter key support
-        document.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') loginBtn.click();
-        });
+        document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && document.activeElement.tagName !== 'A') {
+        loginBtn.click();
+    }
+});
     </script>
 </body>
 </html>
