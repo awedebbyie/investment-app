@@ -114,7 +114,6 @@
             messageDiv.textContent = text;
         }
 
-        // Email/Password Login
         // Email & Password Login
 loginBtn.addEventListener('click', async () => {
     const email = document.getElementById('email').value.trim();
@@ -161,45 +160,29 @@ loginBtn.addEventListener('click', async () => {
     }
 });
 
-        // Google Sign-In
-        // Google Sign-In
-// Google Sign-In (Improved)
-// Google Sign-In
+// Google Sign-In (using Redirect - more stable)
 googleBtn.addEventListener('click', async () => {
     try {
         googleBtn.disabled = true;
         googleBtn.textContent = "Connecting to Google...";
 
-        const persistenceMode = keepSignedIn.checked 
-            ? firebase.auth.Auth.Persistence.LOCAL 
-            : firebase.auth.Auth.Persistence.SESSION;
+        const persistenceMode = keepSignedIn ? 
+            firebase.auth.Auth.Persistence.LOCAL : 
+            firebase.auth.Auth.Persistence.SESSION;
 
         await firebase.auth().setPersistence(persistenceMode);
 
         const provider = new firebase.auth.GoogleAuthProvider();
         provider.addScope('email');
 
-        const result = await auth.signInWithPopup(provider);
-        
-        showMessage("Login successful! Redirecting...", "lime");
-        
-        setTimeout(() => {
-            window.location.href = 'index.html';
-        }, 1200);
+        // Use Redirect instead of Popup
+        await auth.signInWithRedirect(provider);
 
     } catch (error) {
-        console.error("Google Error:", error.code, error.message);
-        
-        if (error.code === "auth/popup-blocked") {
-            showMessage("Please allow popups for this website", "orange");
-        } else if (error.code === "auth/unauthorized-domain") {
-            showMessage("Please add 'localhost' in Firebase Authorized Domains", "red");
-        } else {
-            showMessage("Google sign-in failed. Try again or use Email.", "red");
-        }
-    } finally {
+        console.error(error);
+        showMessage("Google sign-in failed. Please try again.", "red");
         googleBtn.disabled = false;
-        googleBtn.innerHTML = `<img src="https://www.google.com/images/branding/googleg/1x/googleg_standard_color_24dp.png" alt="Google" width="24" height="24" style="filter: brightness(0) invert(1);"> Continue with Google`;
+        googleBtn.textContent = "Continue with Google";
     }
 });
 

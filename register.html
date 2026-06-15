@@ -56,9 +56,8 @@
             messagingSenderId: "774097711994",
             appId: "1:774097711994:web:cb2729f49ed1348b2ddcc3"
         };
-
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+const auth = firebase.auth();
 
         const registerBtn = document.getElementById('registerBtn');
         const googleBtn = document.getElementById('googleBtn');
@@ -72,10 +71,14 @@
         // Email Registration
         registerBtn.addEventListener('click', async () => {
             const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const confirm = document.getElementById('confirmPassword').value.trim();
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
             if (!email || !password || !confirm) return showMessage("All fields required");
+if (!emailPattern.test(email)) {
+    return showMessage("Invalid email format");
+}
             if (password !== confirm) return showMessage("Passwords do not match");
             if (password.length < 6) return showMessage("Password must be at least 6 characters");
 
@@ -83,35 +86,52 @@
             registerBtn.textContent = "CREATING...";
 
             try {
-                await auth.createUserWithEmailAndPassword(email, password);
-                showMessage("Account created! Redirecting to login...", "lime");
-                setTimeout(() => window.location.href = 'login.html', 1800);
-            } catch (error) {
-                showMessage(error.message);
-            } finally {
-                registerBtn.disabled = false;
-                registerBtn.textContent = "CREATE ACCOUNT";
-            }
+    await auth.createUserWithEmailAndPassword(email, password);
+    showMessage("Account created! Redirecting...", "lime");
+    setTimeout(() => window.location.href = "login.html", 1500);
+
+} catch (error) {
+    console.error(error);
+
+    if (error.code === "auth/email-already-in-use") {
+        showMessage("Email already registered");
+    } 
+    else if (error.code === "auth/invalid-email") {
+        showMessage("Invalid email address");
+    } 
+    else if (error.code === "auth/weak-password") {
+        showMessage("Password is too weak");
+    } 
+    else {
+        showMessage("Something went wrong");
+    }
+
+} finally {
+    registerBtn.disabled = false;
+    registerBtn.textContent = "CREATE ACCOUNT";
+}
         });
 
-        // Google Sign Up
-        // Google Sign Up
+// Google Sign Up
 googleBtn.addEventListener('click', async () => {
     try {
         googleBtn.disabled = true;
-        googleBtn.textContent = "Connecting...";
 
-        await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-        await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({
+    prompt: 'select_account'
+});
+        const result = await auth.signInWithPopup(provider);
 
-        showMessage("Success! Redirecting...", "lime");
-        setTimeout(() => window.location.href = 'index.html', 1500);
+console.log("SUCCESS", result);
+showMessage("Account created successfully", "lime");
+window.location.href = "login.html";
+
     } catch (error) {
-        console.error(error);
-        showMessage("Google sign up failed");
+        console.error("GOOGLE ERROR:", error);
+        showMessage(error.message);
     } finally {
         googleBtn.disabled = false;
-        googleBtn.innerHTML = `<img src="https://www.google.com/images/branding/googleg/1x/googleg_standard_color_24dp.png" alt="Google" width="24" height="24" style="filter: brightness(0) invert(1);"> Sign up with Google`;
     }
 });
     </script>
