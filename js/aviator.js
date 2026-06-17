@@ -13,7 +13,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let isRunning = false;
 
     const MAX_X = 335;
-    const MIN_Y = 140;
+
+    // ✅ FIX: vertical boundaries
+    const MIN_Y = 140; // top limit
+    const MAX_Y = 320; // bottom limit (ground level)
 
     let flewAwayContainer = document.getElementById("flewAwayContainer");
     let countdownBarContainer = document.getElementById("countdownBarContainer");
@@ -76,7 +79,6 @@ document.addEventListener("DOMContentLoaded", () => {
         gameContainer.appendChild(countdownBarContainer);
     }
 
-    // ================= BAR =================
     countdownBar = document.getElementById("countdownBar");
 
     if (!countdownBar) {
@@ -152,7 +154,6 @@ document.addEventListener("DOMContentLoaded", () => {
         isRunning = false;
         phase = 3;
 
-        // Immediately hide helicopter
         helicopter.style.transition =
             "left 90ms linear, bottom 90ms linear, opacity 70ms linear";
 
@@ -160,11 +161,9 @@ document.addEventListener("DOMContentLoaded", () => {
         helicopter.style.bottom = (320 - y - 140) + "px";
         helicopter.style.opacity = "0";
 
-        // 🔴 CRITICAL FIX: CLEAR TRAIL IMMEDIATELY
         if (flightPath) flightPath.setAttribute("d", "");
         if (fillArea) fillArea.setAttribute("d", "");
 
-        // keep multiplier red for now
         multiplierEl.style.color = "#ff3333";
 
         flewAwayContainer.style.opacity = "1";
@@ -172,11 +171,9 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
             flewAwayContainer.style.opacity = "0";
 
-            // ================= START COUNTDOWN =================
             countdownBarContainer.style.opacity = "1";
             preparingText.style.opacity = "1";
 
-            // 🔴 FIX REQUESTED: remove multiplier when countdown starts
             multiplierEl.style.opacity = "0";
 
             countdownBar.style.width = "100%";
@@ -216,7 +213,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             y += (Math.random() - 0.5) * 6;
 
-            if (y < MIN_Y) y = MIN_Y;
+            // ✅ FIX: clamp BOTH top and bottom
+            y = Math.max(MIN_Y, Math.min(y, MAX_Y));
 
             if (multiplierValue >= crashPoint) {
                 crashInstantly();
