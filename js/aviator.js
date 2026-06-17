@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
         countdownBarContainer.id = "countdownBarContainer";
         countdownBarContainer.style.cssText = `
             position: absolute;
-            bottom: 25%;
+            bottom: 60%;
             left: 50%;
             transform: translateX(-50%);
             width: 280px;
@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
         countdownBar.style.cssText = `
             width: 100%;
             height: 100%;
-            background: linear-gradient(to right, #00ff88, #00cc66);
+            background: red;
             transition: width 5s linear;
         `;
 
