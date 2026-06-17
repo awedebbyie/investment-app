@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
         flewAwayContainer.id = "flewAwayContainer";
         flewAwayContainer.style.cssText = `
             position: absolute;
-            top: 33%;
+            top: 29%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
