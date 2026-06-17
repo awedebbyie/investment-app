@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const MAX_X = 335;
     const MIN_Y = 140;
 
-    // === OVERLAYS ===
     let flewAwayContainer = document.getElementById("flewAwayContainer");
     let countdownBarContainer = document.getElementById("countdownBarContainer");
     let countdownBar;
@@ -26,9 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector("#game") ||
         helicopter.parentElement;
 
-    // ===============================
-    // FLEW AWAY UI
-    // ===============================
+    // ================= FLEW AWAY =================
     if (!flewAwayContainer) {
         flewAwayContainer = document.createElement("div");
         flewAwayContainer.id = "flewAwayContainer";
@@ -45,22 +42,19 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
 
         const flewText = document.createElement("div");
+        flewText.textContent = "FLEW AWAY!";
         flewText.style.cssText = `
             font-size: 23px;
             font-weight: 900;
             color: red;
             letter-spacing: 2px;
-            margin-bottom: 8px;
         `;
-        flewText.textContent = "FLEW AWAY!";
 
         flewAwayContainer.appendChild(flewText);
         gameContainer.appendChild(flewAwayContainer);
     }
 
-    // ===============================
-    // COUNTDOWN BAR UI (FIXED)
-    // ===============================
+    // ================= COUNTDOWN =================
     if (!countdownBarContainer) {
         countdownBarContainer = document.createElement("div");
         countdownBarContainer.id = "countdownBarContainer";
@@ -73,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
             height: 8px;
             background: rgba(255,255,255,0.2);
             border-radius: 4px;
-            overflow: hidden;
+            overflow: visible;
             z-index: 95;
             opacity: 0;
             transition: opacity 0.4s;
@@ -82,37 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
         gameContainer.appendChild(countdownBarContainer);
     }
 
-    // ===============================
-    // PREPARING TEXT (ALWAYS CREATED)
-    // ===============================
-    preparingText = document.getElementById("preparingText");
-
-    if (!preparingText) {
-        preparingText = document.createElement("div");
-        preparingText.id = "preparingText";
-        preparingText.style.cssText = `
-            position: absolute;
-            top: -45px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #ffffff;
-            font-size: 16px;
-            font-weight: 900;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            white-space: nowrap;
-            text-shadow: 0 0 8px rgba(255,0,0,0.8);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 100;
-        `;
-        preparingText.textContent = "PREPARING FOR NEXT ROUND";
-        countdownBarContainer.appendChild(preparingText);
-    }
-
-    // ===============================
-    // COUNTDOWN BAR
-    // ===============================
+    // ================= BAR =================
     countdownBar = document.getElementById("countdownBar");
 
     if (!countdownBar) {
@@ -127,9 +91,34 @@ document.addEventListener("DOMContentLoaded", () => {
         countdownBarContainer.appendChild(countdownBar);
     }
 
-    // ===============================
-    // RESET GAME
-    // ===============================
+    // ================= PREPARING TEXT =================
+    preparingText = document.getElementById("preparingText");
+
+    if (!preparingText) {
+        preparingText = document.createElement("div");
+        preparingText.id = "preparingText";
+        preparingText.textContent = "PREPARING FOR NEXT ROUND";
+
+        gameContainer.appendChild(preparingText);
+
+        preparingText.style.cssText = `
+            position: absolute;
+            bottom: 62%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ffffff;
+            font-size:14px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 999;
+        `;
+    }
+
+    // ================= RESET =================
     function resetGame() {
         x = 55;
         y = 320;
@@ -144,8 +133,8 @@ document.addEventListener("DOMContentLoaded", () => {
         multiplierEl.style.color = "";
         multiplierEl.style.opacity = "1";
 
-        if (flightPath) flightPath.setAttribute("d", "");
-        if (fillArea) fillArea.setAttribute("d", "");
+        flightPath.setAttribute("d", "");
+        fillArea.setAttribute("d", "");
 
         helicopter.style.left = "0px";
         helicopter.style.bottom = "0px";
@@ -158,22 +147,24 @@ document.addEventListener("DOMContentLoaded", () => {
         countdownBar.style.width = "100%";
     }
 
-    // ===============================
-    // CRASH SEQUENCE
-    // ===============================
+    // ================= CRASH =================
     function crashInstantly() {
+        isRunning = false;
+        phase = 3;
+
+        // Immediately hide helicopter
         helicopter.style.transition =
             "left 90ms linear, bottom 90ms linear, opacity 70ms linear";
 
-        helicopter.style.left = MAX_X + 420 + "px";
-        helicopter.style.bottom = 320 - y - 140 + "px";
+        helicopter.style.left = (MAX_X + 420) + "px";
+        helicopter.style.bottom = (320 - y - 140) + "px";
         helicopter.style.opacity = "0";
 
+        // 🔴 CRITICAL FIX: CLEAR TRAIL IMMEDIATELY
         if (flightPath) flightPath.setAttribute("d", "");
         if (fillArea) fillArea.setAttribute("d", "");
 
-        isRunning = false;
-
+        // keep multiplier red for now
         multiplierEl.style.color = "#ff3333";
 
         flewAwayContainer.style.opacity = "1";
@@ -181,10 +172,12 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
             flewAwayContainer.style.opacity = "0";
 
-            multiplierEl.style.opacity = "0";
-
+            // ================= START COUNTDOWN =================
             countdownBarContainer.style.opacity = "1";
             preparingText.style.opacity = "1";
+
+            // 🔴 FIX REQUESTED: remove multiplier when countdown starts
+            multiplierEl.style.opacity = "0";
 
             countdownBar.style.width = "100%";
             countdownBar.offsetHeight;
@@ -195,14 +188,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 preparingText.style.opacity = "0";
                 startNextRound();
             }, 5000);
+
         }, 3000);
     }
 
-    // ===============================
-    // ANIMATION LOOP
-    // ===============================
+    // ================= ANIMATION =================
     function animate(timestamp) {
-        if (!isRunning) return;
+        if (!isRunning || phase === 3) return;
 
         if (!lastTime) lastTime = timestamp;
         const delta = timestamp - lastTime;
@@ -211,6 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
             requestAnimationFrame(animate);
             return;
         }
+
         lastTime = timestamp;
 
         if (phase === 1) {
@@ -219,10 +212,9 @@ document.addEventListener("DOMContentLoaded", () => {
             if (x >= 220) phase = 2;
         } else if (phase === 2) {
             if (x < MAX_X - 35) x += 2.45;
-            else x = Math.min(x + (Math.random() - 0.5) * 2.2, MAX_X);
+            else x += (Math.random() - 0.5) * 2;
 
-            const waveIntensity = x > MAX_X - 70 ? 10.5 : 6.5;
-            y += (Math.random() - 0.5) * waveIntensity;
+            y += (Math.random() - 0.5) * 6;
 
             if (y < MIN_Y) y = MIN_Y;
 
@@ -232,31 +224,26 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        if (phase !== 3) {
-            multiplierValue += 0.018;
-            multiplierEl.textContent = multiplierValue.toFixed(2) + "x";
-        }
+        multiplierValue += 0.018;
+        multiplierEl.textContent = multiplierValue.toFixed(2) + "x";
 
-        if (helicopter) {
-            helicopter.style.left = x - 55 + "px";
-            helicopter.style.bottom = 320 - y + "px";
-        }
+        helicopter.style.left = (x - 55) + "px";
+        helicopter.style.bottom = (320 - y) + "px";
 
         if (flightPath) {
-            const path = `M 0 320 L ${x} ${y}`;
-            flightPath.setAttribute("d", path);
+            flightPath.setAttribute("d", `M 0 320 L ${x} ${y}`);
+        }
 
-            if (fillArea) {
-                fillArea.setAttribute("d", path + ` L ${x} 320 L 0 320 Z`);
-            }
+        if (fillArea) {
+            fillArea.setAttribute(
+                "d",
+                `M 0 320 L ${x} ${y} L ${x} 320 L 0 320 Z`
+            );
         }
 
         requestAnimationFrame(animate);
     }
 
-    // ===============================
-    // NEXT ROUND
-    // ===============================
     function startNextRound() {
         resetGame();
         isRunning = true;
@@ -264,8 +251,5 @@ document.addEventListener("DOMContentLoaded", () => {
         requestAnimationFrame(animate);
     }
 
-    // AUTO START
-    setTimeout(() => {
-        startNextRound();
-    }, 600);
+    setTimeout(() => startNextRound(), 600);
 });
