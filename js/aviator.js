@@ -15,12 +15,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const MAX_X = 335;
     const MIN_Y = 140;
 
-    // === FLEW AWAY & COUNTDOWN ELEMENTS ===
+    // === OVERLAYS ===
     let flewAwayContainer = document.getElementById("flewAwayContainer");
     let countdownBarContainer = document.getElementById("countdownBarContainer");
-    let countdownBar = document.getElementById("countdownBar");
+    let countdownBar;
+    let preparingText;
 
-    // Create elements if they don't exist
+    const gameContainer =
+        document.querySelector(".game-container") ||
+        document.querySelector("#game") ||
+        helicopter.parentElement;
+
+    // ===============================
+    // FLEW AWAY UI
+    // ===============================
     if (!flewAwayContainer) {
         flewAwayContainer = document.createElement("div");
         flewAwayContainer.id = "flewAwayContainer";
@@ -35,9 +43,8 @@ document.addEventListener("DOMContentLoaded", () => {
             pointer-events: none;
             transition: opacity 0.4s ease;
         `;
-        
+
         const flewText = document.createElement("div");
-        flewText.id = "flewText";
         flewText.style.cssText = `
             font-size: 23px;
             font-weight: 900;
@@ -46,15 +53,14 @@ document.addEventListener("DOMContentLoaded", () => {
             margin-bottom: 8px;
         `;
         flewText.textContent = "FLEW AWAY!";
-        
+
         flewAwayContainer.appendChild(flewText);
-        // Append to game container (change selector if needed)
-        const gameContainer = document.querySelector(".game-container") || 
-                             document.querySelector("#game") || 
-                             helicopter.parentElement;
         gameContainer.appendChild(flewAwayContainer);
     }
 
+    // ===============================
+    // COUNTDOWN BAR UI (FIXED)
+    // ===============================
     if (!countdownBarContainer) {
         countdownBarContainer = document.createElement("div");
         countdownBarContainer.id = "countdownBarContainer";
@@ -73,6 +79,43 @@ document.addEventListener("DOMContentLoaded", () => {
             transition: opacity 0.4s;
         `;
 
+        gameContainer.appendChild(countdownBarContainer);
+    }
+
+    // ===============================
+    // PREPARING TEXT (ALWAYS CREATED)
+    // ===============================
+    preparingText = document.getElementById("preparingText");
+
+    if (!preparingText) {
+        preparingText = document.createElement("div");
+        preparingText.id = "preparingText";
+        preparingText.style.cssText = `
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            text-shadow: 0 0 8px rgba(255,0,0,0.8);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 100;
+        `;
+        preparingText.textContent = "PREPARING FOR NEXT ROUND";
+        countdownBarContainer.appendChild(preparingText);
+    }
+
+    // ===============================
+    // COUNTDOWN BAR
+    // ===============================
+    countdownBar = document.getElementById("countdownBar");
+
+    if (!countdownBar) {
         countdownBar = document.createElement("div");
         countdownBar.id = "countdownBar";
         countdownBar.style.cssText = `
@@ -81,87 +124,89 @@ document.addEventListener("DOMContentLoaded", () => {
             background: red;
             transition: width 5s linear;
         `;
-
         countdownBarContainer.appendChild(countdownBar);
-        const gameContainer = document.querySelector(".game-container") || 
-                             document.querySelector("#game") || 
-                             helicopter.parentElement;
-        gameContainer.appendChild(countdownBarContainer);
     }
 
+    // ===============================
+    // RESET GAME
+    // ===============================
     function resetGame() {
         x = 55;
         y = 320;
         multiplierValue = 1;
         phase = 1;
-        
-        crashPoint = window.generateCrashPoint ? window.generateCrashPoint() : (1 + Math.random() * 20);
-        
+
+        crashPoint = window.generateCrashPoint
+            ? window.generateCrashPoint()
+            : 1 + Math.random() * 20;
+
         multiplierEl.textContent = "1.00x";
-        multiplierEl.style.color = ""; // reset color
+        multiplierEl.style.color = "";
+        multiplierEl.style.opacity = "1";
 
         if (flightPath) flightPath.setAttribute("d", "");
         if (fillArea) fillArea.setAttribute("d", "");
-        
+
         helicopter.style.left = "0px";
         helicopter.style.bottom = "0px";
         helicopter.style.opacity = "1";
         helicopter.style.transition = "none";
 
-        // Hide overlays
         flewAwayContainer.style.opacity = "0";
         countdownBarContainer.style.opacity = "0";
+        preparingText.style.opacity = "0";
         countdownBar.style.width = "100%";
     }
 
+    // ===============================
+    // CRASH SEQUENCE
+    // ===============================
     function crashInstantly() {
-        if (!helicopter) return;
-        
-        // Helicopter flies away
-        helicopter.style.transition = "left 90ms linear, bottom 90ms linear, opacity 70ms linear";
-        helicopter.style.left = (MAX_X + 420) + "px";
-        helicopter.style.bottom = (320 - y - 140) + "px";
+        helicopter.style.transition =
+            "left 90ms linear, bottom 90ms linear, opacity 70ms linear";
+
+        helicopter.style.left = MAX_X + 420 + "px";
+        helicopter.style.bottom = 320 - y - 140 + "px";
         helicopter.style.opacity = "0";
 
-        // Clear path
         if (flightPath) flightPath.setAttribute("d", "");
         if (fillArea) fillArea.setAttribute("d", "");
 
         isRunning = false;
 
-        // Show FLEW AWAY exactly like the video
-        multiplierEl.style.color = "#ff3333";           // Red multiplier
-        multiplierEl.style.transition = "color 0.2s";
-        
+        multiplierEl.style.color = "#ff3333";
+
         flewAwayContainer.style.opacity = "1";
 
-        // Keep FLEW AWAY visible for 3 seconds
         setTimeout(() => {
             flewAwayContainer.style.opacity = "0";
-        }, 3000);
 
-        // Start countdown bar after 3 seconds
-        setTimeout(() => {
+            multiplierEl.style.opacity = "0";
+
             countdownBarContainer.style.opacity = "1";
+            preparingText.style.opacity = "1";
+
             countdownBar.style.width = "100%";
-            
-            // Trigger animation
             countdownBar.offsetHeight;
             countdownBar.style.width = "0%";
 
-            // Auto next round after 5 seconds
             setTimeout(() => {
                 countdownBarContainer.style.opacity = "0";
+                preparingText.style.opacity = "0";
                 startNextRound();
             }, 5000);
         }, 3000);
     }
 
+    // ===============================
+    // ANIMATION LOOP
+    // ===============================
     function animate(timestamp) {
         if (!isRunning) return;
 
         if (!lastTime) lastTime = timestamp;
         const delta = timestamp - lastTime;
+
         if (delta < 16) {
             requestAnimationFrame(animate);
             return;
@@ -172,28 +217,19 @@ document.addEventListener("DOMContentLoaded", () => {
             x += 2.8;
             y -= 1.4;
             if (x >= 220) phase = 2;
-        } 
-        else if (phase === 2) {
-            if (x < MAX_X - 35) {
-                x += 2.45;
-            } else {
-                x = Math.min(x + (Math.random() - 0.5) * 2.2, MAX_X);
-            }
+        } else if (phase === 2) {
+            if (x < MAX_X - 35) x += 2.45;
+            else x = Math.min(x + (Math.random() - 0.5) * 2.2, MAX_X);
 
-            const waveIntensity = (x > MAX_X - 70) ? 10.5 : 6.5;
+            const waveIntensity = x > MAX_X - 70 ? 10.5 : 6.5;
             y += (Math.random() - 0.5) * waveIntensity;
 
-            if (y < MIN_Y) y = MIN_Y + Math.abs((MIN_Y - y) * 0.6);
+            if (y < MIN_Y) y = MIN_Y;
 
             if (multiplierValue >= crashPoint) {
-                phase = 3;
                 crashInstantly();
                 return;
             }
-        } 
-        else if (phase === 3) {
-            crashInstantly();
-            return;
         }
 
         if (phase !== 3) {
@@ -201,25 +237,26 @@ document.addEventListener("DOMContentLoaded", () => {
             multiplierEl.textContent = multiplierValue.toFixed(2) + "x";
         }
 
-        if (phase !== 3 && helicopter) {
-            const displayX = Math.min(x, MAX_X + 50);
-            helicopter.style.left = (displayX - 55) + "px";
-            helicopter.style.bottom = (320 - y) + "px";
+        if (helicopter) {
+            helicopter.style.left = x - 55 + "px";
+            helicopter.style.bottom = 320 - y + "px";
         }
 
-        if (phase !== 3 && flightPath) {
-            const drawX = Math.min(x, MAX_X);
-            const drawY = Math.max(y, MIN_Y);
-            const path = `M 0 320 L ${drawX} ${drawY}`;
+        if (flightPath) {
+            const path = `M 0 320 L ${x} ${y}`;
             flightPath.setAttribute("d", path);
+
             if (fillArea) {
-                fillArea.setAttribute("d", path + ` L ${drawX} 320 L 0 320 Z`);
+                fillArea.setAttribute("d", path + ` L ${x} 320 L 0 320 Z`);
             }
         }
 
         requestAnimationFrame(animate);
     }
 
+    // ===============================
+    // NEXT ROUND
+    // ===============================
     function startNextRound() {
         resetGame();
         isRunning = true;
@@ -227,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
         requestAnimationFrame(animate);
     }
 
-    // Auto start
+    // AUTO START
     setTimeout(() => {
         startNextRound();
     }, 600);
