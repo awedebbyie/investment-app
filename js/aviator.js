@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let lastTime = 0;
     let isRunning = false;
 
-    const MAX_X = 300;
+    const MAX_X = 280; // right limit (ground level)
 
     // ✅ FIX: vertical boundaries
     const MIN_Y = 140; // top limit
