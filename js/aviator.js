@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let lastTime = 0;
     let isRunning = false;
 
-    const MAX_X = 335;
+    const MAX_X = 300;
 
     // ✅ FIX: vertical boundaries
     const MIN_Y = 140; // top limit
