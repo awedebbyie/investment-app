@@ -6,8 +6,8 @@
     <title>Aviator Game - Deposit</title>
     <link rel="stylesheet" href="style.css">
     <!-- Firebase SDK (optional - only if you want auth protection) -->
-    <!-- <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script> -->
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 </head>
 <body>
     <div class="login-container">  <!-- Reusing same container class for consistent styling -->
@@ -64,11 +64,32 @@
 
     <script>
         // ==================== YOUR FIREBASE CONFIG (uncomment if using auth) ====================
-        // const firebaseConfig = { ... };
-        // firebase.initializeApp(firebaseConfig);
-        // const auth = firebase.auth();
+        const firebaseConfig = {
+    apiKey: "AIzaSyCd2RbRPpx_qnU7W99ohe8el0rSpcYyIOU",
+    authDomain: "success-75f95.firebaseapp.com",
+    projectId: "success-75f95",
+    storageBucket: "success-75f95.firebasestorage.app",
+    messagingSenderId: "774097711994",
+    appId: "1:774097711994:web:cb2729f49ed1348b2ddcc3"
+};
+        if (typeof firebase !== "undefined") {
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
-        const userEmail = "testuser@gmail.com"; // Replace with actual logged-in user email (e.g. from Firebase)
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+            userEmail = user.email;
+        }
+    });
+}
+
+        let userEmail = "";
+
+firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+        userEmail = user.email;
+    }
+});
 
         /* DOM Elements */
         const amountInput = document.getElementById('amount');
@@ -87,6 +108,11 @@
         function payWithPaystack() {
             let amount = parseFloat(amountInput.value);
 
+            if (!userEmail || userEmail.trim() === "") {
+    showMessage("Please wait, loading user session...", "red");
+    return;
+}
+
             if (!amount || amount < 500) {
                 showMessage("Minimum deposit is ₦500", "#ffaa00");
                 return;
@@ -100,7 +126,7 @@
                 email: userEmail,
                 amount: amount * 100, // Paystack uses kobo (smallest unit)
                 currency: "NGN",
-                ref: "AVI-" + Math.floor(Math.random() * 1000000000), // Unique reference
+               ref: `AVI-${Date.now()}-${crypto.randomUUID?.() || Math.floor(Math.random() * 999999)}`,
 
                 callback: function(response) {
                     showMessage("Payment successful! Reference: " + response.reference, "lime");
@@ -115,10 +141,14 @@
                 },
 
                 onClose: function() {
-                    showMessage("Payment cancelled", "#ffaa00");
-                    depositBtn.disabled = false;
-                    depositBtn.textContent = "PAY NOW";
-                }
+    showMessage("Payment cancelled", "#ffaa00");
+
+    depositBtn.disabled = false;
+    depositBtn.textContent = "PAY NOW";
+
+    amountInput.disabled = false;
+    amountInput.value = "";
+}
             });
 
             handler.openIframe();
